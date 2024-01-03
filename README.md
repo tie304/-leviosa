@@ -36,7 +36,7 @@ use leviosa::leviosa;
 
 #[leviosa]
 #[derive(Debug, FromRow)]
-struct MyStruct {
+struct MyStruct { // all tables are snake case: my_struct
     id: Option<i32>, // create by default ignores all optional fields
     name: String,
 }
@@ -60,7 +60,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 ```
+### Run sqlx migrations
+`sqlx migrate add init`
 
+Add your table to the migration
+
+```sql
+CREATE TABLE my_struct (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+```
+`sqlx migrate run`
+
+`cargo run`
 ## Roadmap
 
 Here's a glimpse of what we plan to roll out in future updates:
