@@ -7,7 +7,7 @@ use serde_json::Value;
 use sqlx::{
     migrate::Migrator, postgres::PgPoolOptions, prelude::FromRow, PgPool
 };
-use super_macros::leviosa;
+use leviosa::leviosa;
 use uuid::Uuid;
 
 #[leviosa]
