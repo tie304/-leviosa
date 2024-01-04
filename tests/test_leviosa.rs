@@ -2,12 +2,10 @@ use std::time::Duration;
 
 use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Timelike, Utc};
 use ctor::{ctor, dtor};
+use leviosa::leviosa;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::{
-    migrate::Migrator, postgres::PgPoolOptions, prelude::FromRow, PgPool
-};
-use leviosa::leviosa;
+use sqlx::{migrate::Migrator, postgres::PgPoolOptions, prelude::FromRow, PgPool};
 use uuid::Uuid;
 
 #[leviosa]
@@ -371,6 +369,14 @@ async fn test_find_all() {
         .expect("Failed where Clause");
 
     assert_eq!(ordered_by_entities[0].id, verified.id);
+
+    let dyn_query = MoreAdvancedStruct::find()
+        .r#where(&format!("email = '{}'", "tylerhanson9123@gmail.com"))
+        .execute(&db)
+        .await
+        .expect("Could not execute query");
+
+    assert_eq!(dyn_query[0], first_entry);
 }
 
 #[tokio::test]
