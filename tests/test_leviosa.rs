@@ -5,6 +5,7 @@ use ctor::{ctor, dtor};
 use leviosa::leviosa;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sqlx::postgres::PgQueryResult;
 use sqlx::{migrate::Migrator, postgres::PgPoolOptions, prelude::FromRow, PgPool};
 use uuid::Uuid;
 
@@ -391,5 +392,43 @@ async fn test_update_many() {
 
 #[tokio::test]
 async fn test_delete_many() {
-    todo!()
+    let db = setup_database().await.expect("Database setup failed");
+    let first_entry = MoreAdvancedStruct::create(
+        &db,
+        String::from("bob"),
+        String::from("harrypotter@gmail.com"),
+        false,
+        Utc::now(),
+    )
+    .await
+    .expect("Failed to create entity");
+
+    let second_entity = MoreAdvancedStruct::create(
+        &db,
+        String::from("bob"),
+        String::from("bobaggot@gmail.com"),
+        true,
+        Utc::now(),
+    )
+    .await
+    .expect("Failed to create entity");
+
+    let entities = MoreAdvancedStruct::find()
+        .r#where("name = 'bob'")
+        .execute(&db)
+        .await;
+
+    assert_eq!(entities.unwrap().len(), 2);
+
+    MoreAdvancedStruct::delete_all()
+        .r#where("name = 'bob'")
+        .execute(&db)
+        .await;
+
+    let entities = MoreAdvancedStruct::find()
+        .r#where("name = 'bob'")
+        .execute(&db)
+        .await;
+
+    assert_eq!(entities.unwrap().len(), 0);
 }

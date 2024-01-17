@@ -127,21 +127,26 @@ pub fn leviosa(_attr: TokenStream, item: TokenStream) -> TokenStream {
         quote! {}
     };
 
-    let query_builder_name = format_ident!(
+    let find_all_query_builder_name = format_ident!(
         "{}FindAllQueryBuilder",
+        input.ident.to_string().to_camel_case()
+    );
+
+    let delete_all_query_builder_name = format_ident!(
+        "{}DeleteAllQueryBuilder",
         input.ident.to_string().to_camel_case()
     );
 
     let find_all_query_builder = quote! {
         #[derive(Clone)]
-        struct #query_builder_name {
+        struct #find_all_query_builder_name {
             query: String,
             limit: Option<usize>,
             where_clause: Option<String>,
             order_by_clause: Option<String>
         }
 
-        impl #query_builder_name {
+        impl #find_all_query_builder_name {
             fn new() -> Self {
                 Self {
                     query: format!("SELECT * FROM {}", #struct_name_snake_case),
@@ -193,10 +198,55 @@ pub fn leviosa(_attr: TokenStream, item: TokenStream) -> TokenStream {
         }
     };
 
+    let delete_all_query_builder = quote! {
+        #[derive(Clone)]
+        struct #delete_all_query_builder_name {
+            query: String,
+            where_clause: Option<String>,
+        }
+
+        impl #delete_all_query_builder_name {
+            fn new() -> Self {
+                Self {
+                    query: format!("DELETE FROM {}", #struct_name_snake_case),
+                    where_clause: None,
+                }
+            }
+
+            fn r#where(&mut self, _where: &str) -> &mut Self {
+                self.where_clause = Some(String::from(_where));
+                self
+            }
+
+            pub async fn execute(&self, pool: &PgPool) -> sqlx::Result<()> {
+                let mut query = self.query.clone();
+                if let Some(ref where_clause) = self.where_clause {
+                    query.push_str(" WHERE ");
+                    query.push_str(where_clause);
+                };
+
+                let mut transaction = pool.begin().await?;
+                sqlx::query(&query)
+                    .execute(&mut *transaction)
+                    .await?;
+
+                transaction.commit().await?;
+                Ok(())
+
+            }
+        }
+    };
+
     // Define the find_all method for the struct
     let find_all_method = quote! {
-        pub fn find() -> #query_builder_name {
-            #query_builder_name::new()
+        pub fn find() -> #find_all_query_builder_name {
+            #find_all_query_builder_name::new()
+        }
+    };
+
+    let delete_all_method = quote! {
+        pub fn delete_all() -> #delete_all_query_builder_name {
+            #delete_all_query_builder_name::new()
         }
     };
 
@@ -241,27 +291,17 @@ pub fn leviosa(_attr: TokenStream, item: TokenStream) -> TokenStream {
         }
     };
 
-    let delete_by_id_method = quote! {
-        pub async fn delete_by_id(pool: &sqlx::PgPool, id: i32) -> sqlx::Result<()> {
-            let query = format!("DELETE FROM {} WHERE id = $1", #struct_name_snake_case);
-            sqlx::query(&query)
-                .bind(id)
-                .execute(pool)
-                .await?;
-            Ok(())
-        }
-    };
-
     let expanded = quote! {
         #input
 
         #find_all_query_builder
+        #delete_all_query_builder
 
         impl #name {
             #methods
             #find_all_method
             #delete_method
-            #delete_by_id_method
+            #delete_all_method
             #create_method
             #constructor
 
