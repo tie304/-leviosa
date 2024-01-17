@@ -80,7 +80,7 @@ Here's a glimpse of what we plan to roll out in future updates:
 
 - **Support for Additional Types**: Support for more data types to enhance compatibility and flexibility with various PostgreSQL data formats such as `NUMERIC`
 
-- **Batch Operations (`create_many`, `update_many`, `delete_many`)**: To improve efficiency and performance, we are working on implementing batch operations. These will allow users to perform create, update, and delete operations on multiple records simultaneously, making bulk data handling much more streamlined.
+- **Batch Operations (`create_many`, `update_many`, ~~`delete_many`~~)**: To improve efficiency and performance, we are working on implementing batch operations. These will allow users to perform create, update, and delete operations on multiple records simultaneously, making bulk data handling much more streamlined.
 
 - **Transactional Support for Batch Operations**:  Upcoming batch operations will be designed to run within database transactions. This ensures that either all operations succeed, or none do, maintaining data consistency and reliability.
 
