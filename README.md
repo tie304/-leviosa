@@ -6,8 +6,7 @@ This is not an ORM but a light helper libary.
 ## Features
 
 - **Automatic CRUD Operations**: Generate `create`, `read`, `update`, and `delete` functions for your structs.
-- **Advanced Query Building**: Currently `find` .
-- **Type-Safe Interface**: Strong typing for database fields to ensure data integrity.
+- **Advanced Query Building**: Currently `find` and `delete` .
 
 ## Getting Started
 `git clone https://github.com/tie304/leviosa.git`
