@@ -9,6 +9,7 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
+leviosa_utils = { git = "https://github.com/tie304/leviosa_utils.git", branch = "master" }
 chrono = "0.4.31"
 rust_decimal = "1.33.1"
 uuid = { version = "1.6.1", features = ["v4"] } 

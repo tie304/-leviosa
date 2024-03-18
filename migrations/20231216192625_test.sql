@@ -5,7 +5,79 @@ CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');
 
 CREATE TABLE test_struct (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE test_struct_relation (
+    id SERIAL PRIMARY KEY,
+    my_data TEXT,
+    test_struct INT NOT NULL,
+    CONSTRAINT fk_test_struct
+        FOREIGN KEY (test_struct)
+        REFERENCES test_struct (id)
+        ON DELETE CASCADE
+);
+
+/*
+STRICT ONE TO ONE
+CREATE TABLE test_struct (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE test_struct_relation (
+    id SERIAL PRIMARY KEY,
+    my_data TEXT,
+    test_struct INT UNIQUE NOT NULL, -- Notice the UNIQUE constraint here
+    CONSTRAINT fk_test_struct
+        FOREIGN KEY (test_struct)
+        REFERENCES test_struct (id)
+        ON DELETE CASCADE
+);
+
+
+CREATE TABLE test_struct (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+// MANY TO MANY
+
+CREATE TABLE test_struct_relation (
+    id SERIAL PRIMARY KEY,
+    my_data TEXT
+    -- Removed direct reference to test_struct
+);
+
+*/
+
+CREATE TABLE many_to_many_relation_1 (
+    id SERIAL PRIMARY KEY,
+    my_data VARCHAR(10)
+);
+
+CREATE TABLE many_to_many_relation_2 (
+    id SERIAL PRIMARY KEY,
+    my_data VARCHAR(10)
+);
+
+CREATE TABLE many_to_many_association (
+    many_to_many_relation_1_id INT NOT NULL,
+    many_to_many_relation_2_id INT NOT NULL,
+    PRIMARY KEY (many_to_many_relation_1_id, many_to_many_relation_2_id),
+    CONSTRAINT fk_many_to_many_relation_1
+        FOREIGN KEY (many_to_many_relation_1_id)
+        REFERENCES many_to_many_relation_1(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_many_to_many_relation_2
+        FOREIGN KEY (many_to_many_relation_2_id)
+        REFERENCES many_to_many_relation_2 (id)
+        ON DELETE CASCADE
 );
 
 
