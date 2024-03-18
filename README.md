@@ -6,7 +6,8 @@ This is not an ORM but a light helper libary.
 ## Features
 
 - **Automatic CRUD Operations**: Generate `create`, `read`, `update`, and `delete` functions for your structs.
-- **Advanced Query Building**: Currently `find` and `delete` .
+- **Advanced Query Building**: Currently `find` and `delete` . * NOTE THESE FIELDS ARE NOT SANITIZED
+- **Realationships**: Currently `one-to-one` `one-to-many` `many-to-many` Many to many has very limited support at the moment, only being able to create an entity.
 
 ## Getting Started
 `git clone https://github.com/tie304/leviosa.git`
